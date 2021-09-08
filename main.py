@@ -7,7 +7,7 @@ import cvzone
 
 import numpy as np
 from settings import X_S, Y_S, Resolution, Res_center, ColorRect
-from sources import Detector, Rect_list
+from sources import Detector, Rect_list, Circle_list, Elipse
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
@@ -43,15 +43,24 @@ def Game(Root):
             cursor = lmList[8]
             length, _ = Detector.findDistance(lmList[8], lmList[12])
 
-            if length < 50:
+            if length < 40:
                 for rect in Rect_list:
                     rect.update(cursor)
+                for circle in Circle_list:
+                    circle.update(cursor)
+                Elipse.update(cursor)
+
         for rect in Rect_list:
             centerx, centery = rect.posCenter
             w, h = rect.size
-            cv.rectangle(frame, (int(centerx - w // 2), int(centery - h // 2)), (int(centerx + w // 2), int(centery + h // 2)),
+            cv.rectangle(frame, (int(centerx - w // 2), int(centery - h // 2)), (int(centerx + w // 2), int(centery + h//2)),
                          ColorRect, cv.FILLED)
-            cvzone.cornerRect(frame, (int(centerx - w // 2), int(centery - h // 2), w, h), 20, rt=0)
+            # cvzone.cornerRect(frame, (int(centerx - w // 2), int(centery - h // 2), w, h), 20, rt=0)
+        for circle in Circle_list:
+            centerx, centery = circle.posCenter
+            w, _ = circle.size
+            cv.circle(frame, (centerx, centery), w, thickness=cv.FILLED, color=(0, 255, 0))
+        cv.ellipse(frame, Elipse.posCenter, (Elipse.size[0], Elipse.size[1]), 0, 180, 360, (20, 43, 222), thickness=cv.FILLED)
         #
         # elif len(hands) == 2:
         #     hand1 = hands[0]
@@ -62,6 +71,15 @@ def Game(Root):
 
         cv.imshow('FG', frame)
         cv.waitKey(1)
+
+
+def Options():
+    OptionsRoot = Toplevel()
+    OptionsRoot.title("Options")
+    OptionsRoot.geometry("300x500")
+
+
+    OptionsRoot.mainloop()
 
 
 if __name__ == '__main__':
@@ -78,7 +96,8 @@ if __name__ == '__main__':
     print(X_S, Y_S)
     StartButton = Button(Root, text="Start", padx=int(X_S/15), pady=int(Y_S/22), font=("Helvetica", 23), command=lambda: Game(Root))
     StartButton.place(x=int(X_S/2 - 1.5 * X_S/15), y=int(Y_S/1.2 - 3 * Y_S/72))
-    #
+    OptionButton = Button(Root, text="Options", padx=int(X_S/21.5), pady=int(Y_S/22), font=("Helvetica", 23), command=Options)
+    OptionButton.place(x=int(X_S/2 - 6 * X_S/15), y=int(Y_S/1.2 - 3 * Y_S/72))
     # canv.create_text(Root, )
 
 

@@ -4,7 +4,7 @@ import random
 from settings import Resolution
 
 
-class DragRect:
+class DragFigure:
 
     def __init__(self, posCenter=None, size=[130, 130]):
         self.size = size
@@ -18,6 +18,7 @@ class DragRect:
         w, h = self.size
         if centerx - w//2 < cursor[0] < centerx + w//2 and centery - h//2 < cursor[1] < centery + h//2:
             self.posCenter = cursor
+        return True
 
     @classmethod
     def get_random_pos(cls, minx: int, miny: int):
