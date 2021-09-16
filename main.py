@@ -6,8 +6,8 @@ import cv2 as cv
 import cvzone
 
 import numpy as np
-from settings import X_S, Y_S, Resolution, Res_center, ColorRect
-from sources import Detector, Rect_list, Circle_list, Elipse
+from settings import X_S, Y_S, Resolution, Res_center, ColorRect, DetectRectColor
+from sources import Detector, Rect_list, Circle_list, Elipse, BallImage, BallRect, overlay_transparent
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
@@ -43,31 +43,49 @@ def Game(Root):
             cursor = lmList[8]
             length, _ = Detector.findDistance(lmList[8], lmList[12])
 
-            if length < 40:
-                for rect in Rect_list:
-                    rect.update(cursor)
-                for circle in Circle_list:
-                    circle.update(cursor)
-                Elipse.update(cursor)
+            if length < 55:
 
-        for rect in Rect_list:
-            centerx, centery = rect.posCenter
-            w, h = rect.size
-            cv.rectangle(frame, (int(centerx - w // 2), int(centery - h // 2)), (int(centerx + w // 2), int(centery + h//2)),
-                         ColorRect, cv.FILLED)
-            # cvzone.cornerRect(frame, (int(centerx - w // 2), int(centery - h // 2), w, h), 20, rt=0)
-        for circle in Circle_list:
-            centerx, centery = circle.posCenter
-            w, _ = circle.size
-            cv.circle(frame, (centerx, centery), w, thickness=cv.FILLED, color=(0, 255, 0))
-        cv.ellipse(frame, Elipse.posCenter, (Elipse.size[0], Elipse.size[1]), 0, 180, 360, (20, 43, 222), thickness=cv.FILLED)
+                #updating the objects and their position
+                # for rect in Rect_list:
+                #     rect.update(cursor)
+                # for circle in Circle_list:
+                #     circle.update(cursor)
+                BallRect.update(cursor)
+                # Elipse.update(cursor)
+        else:
+            cv.rectangle(frame, (0, 0), (15, 15), DetectRectColor, cv.FILLED)
+
+
+        #drawing the objects from resources
+        ball_x, ball_y = BallRect.posCenter
+        ball_w, ball_h = BallRect.size
+
+        # drawing geometry shapes
+        # for rect in Rect_list:
+        #     centerx, centery = rect.posCenter
+        #     w, h = rect.size
+        #     cv.rectangle(frame, (int(centerx - w // 2), int(centery - h // 2)),
+        #                  (int(centerx + w // 2), int(centery + h // 2)),
+        #                  ColorRect, cv.FILLED)
+        #     # cvzone.cornerRect(frame, (int(centerx - w // 2), int(centery - h // 2), w, h), 20, rt=0)
+        # for circle in Circle_list:
+        #     centerx, centery = circle.posCenter
+        #     w, _ = circle.size
+        #     cv.circle(frame, (centerx, centery), w, thickness=cv.FILLED, color=(0, 255, 0))
         #
-        # elif len(hands) == 2:
-        #     hand1 = hands[0]
-        #     hand2 = hands[1]
-        #
-        # else:
-        #     pass
+
+        # for jpg
+
+        # frame[ball_y-ball_h//2:ball_y+ball_h//2, ball_x-ball_w//2:ball_x+ball_w//2] = BallImage
+
+        # for png
+
+        frame = cvzone.overlayPNG(frame, BallImage, [ball_x - ball_w//2, ball_y-ball_h//2])
+        # frame = overlay_transparent(frame, BallImage, ball_x - ball_w//2, ball_y-ball_h//2)
+
+
+
+        # cv.ellipse(frame, Elipse.posCenter, (Elipse.size[0], Elipse.size[1]), 0, 180, 360, (20, 43, 222), thickness=cv.FILLED)
 
         cv.imshow('FG', frame)
         cv.waitKey(1)
